@@ -236,6 +236,7 @@ public class ProcessModelParser extends Parser<ProcessModel> {
                     List<Element> dataInElements = el.getChildren("dataInputAssociation", bpmnNamespace);
                     if (!dataInElements.isEmpty()) {
                         tasksWithDataInputAssociations.put(nodeId, dataInElements);
+                        // todo: cost driver annotation can be detected here
                     }
                     List<Element> dataOutElements = el.getChildren("dataOutputAssociation", bpmnNamespace);
                     if (!dataOutElements.isEmpty()) {
@@ -389,6 +390,8 @@ public class ProcessModelParser extends Parser<ProcessModel> {
                 else if (elementName.equals("dataObjectReference")) {
                 	String dataObjectRef = el.getAttributeValue("dataObjectRef");
                     dataObjectReferences.put(nodeId, dataObjectRef);
+                    // todo: cost driver can be detected here
+
                 }
                 else if (elementName.equals("ioSpecification")){
                 	Element input = el.getChild("dataInput", bpmnNamespace);
