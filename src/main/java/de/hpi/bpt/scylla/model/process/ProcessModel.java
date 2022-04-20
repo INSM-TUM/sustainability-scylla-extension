@@ -59,6 +59,8 @@ public class ProcessModel extends SimulationInput {
     private String participant;
     private Set<ProcessModel> processModelsInCollaboration;
 
+    private Map<Integer, List<String>> activityToCostDriverMap;
+
     /**
      * Constructor.
      * 
@@ -88,7 +90,8 @@ public class ProcessModel extends SimulationInput {
     public ProcessModel(String id, Element xmlDom, Graph<Integer> graph, Map<Integer, String> identifiers,
             Map<String, Integer> identifiersToNodeIds, Map<Integer, String> displayNames,
             Map<Integer, ProcessModel> subProcesses, Map<Integer, String> calledElementsOfCallActivities,
-            Map<Integer, TaskType> tasks, Map<Integer, GatewayType> gateways, Map<Integer, EventType> eventTypes) {
+            Map<Integer, TaskType> tasks, Map<Integer, GatewayType> gateways, Map<Integer, EventType> eventTypes,
+            Map<Integer, List<String>> activityToCostDriverMap) {
         super(id);
         this.xmlDom = xmlDom;
         this.graph = graph;
@@ -101,6 +104,7 @@ public class ProcessModel extends SimulationInput {
         this.gateways = gateways;
         this.eventTypes = eventTypes;
         this.modelScopeId = buildModelScopeId(this);
+        this.activityToCostDriverMap = activityToCostDriverMap;
     }
 
     private String buildModelScopeId(ProcessModel processModel) {
@@ -395,5 +399,9 @@ public class ProcessModel extends SimulationInput {
 
     public void setProcessModelsInCollaboration(Set<ProcessModel> processModelsTriggeredInCollaboration) {
         this.processModelsInCollaboration = processModelsTriggeredInCollaboration;
+    }
+
+    public Map<Integer, List<String>> getActivityToCostDriverMap() {
+        return activityToCostDriverMap;
     }
 }

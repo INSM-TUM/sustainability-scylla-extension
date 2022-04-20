@@ -1,12 +1,6 @@
 package de.hpi.bpt.scylla.parser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -175,6 +169,11 @@ public class ProcessModelParser extends Parser<ProcessModel> {
         Map<Integer, Element> sequenceFlows = new HashMap<Integer, Element>();
         Map<Integer, List<Element>> tasksWithDataInputAssociations = new HashMap<Integer, List<Element>>(); //not only tasks anymore, also events
         Map<Integer, List<Element>> tasksWithDataOutputAssociations = new HashMap<Integer, List<Element>>(); //not only tasks anymore, also events
+
+        Map<String, String> costDriverMap = new HashMap<>();
+        Map<Integer, String> activityCostDriverAssociationMap = new HashMap<>();
+        Map<Integer, List<String>> activityToCostDriverMap = new HashMap<>();
+
         int nodeId = 0;
         for (Element el : process.getChildren()) {
             String elementName = el.getName();
@@ -236,7 +235,13 @@ public class ProcessModelParser extends Parser<ProcessModel> {
                     List<Element> dataInElements = el.getChildren("dataInputAssociation", bpmnNamespace);
                     if (!dataInElements.isEmpty()) {
                         tasksWithDataInputAssociations.put(nodeId, dataInElements);
+                        dataInElements.forEach(e -> System.out.println(e.getChild("sourceRef", bpmnNamespace).getValue()));
+                        // System.out.println(dataInElements);
                         // todo: cost driver annotation can be detected here
+                        for (Element dataInElement : dataInElements) {
+                            String associationID = dataInElement.getChild("sourceRef", bpmnNamespace).getValue();
+                            activityCostDriverAssociationMap.put(nodeId, associationID);
+                        }
                     }
                     List<Element> dataOutElements = el.getChildren("dataOutputAssociation", bpmnNamespace);
                     if (!dataOutElements.isEmpty()) {
@@ -391,6 +396,13 @@ public class ProcessModelParser extends Parser<ProcessModel> {
                 	String dataObjectRef = el.getAttributeValue("dataObjectRef");
                     dataObjectReferences.put(nodeId, dataObjectRef);
                     // todo: cost driver can be detected here
+                    String dataObjectName = el.getAttributeValue("name");
+                    if (dataObjectName.startsWith("Cost Driver: ")) {
+                        String costDriverName = dataObjectName.split(": ")[1];
+                        System.out.println(costDriverName);
+                        System.out.println(el.getAttributeValue("id"));
+                        costDriverMap.put(el.getAttributeValue("id"), costDriverName);
+                    }
 
                 }
                 else if (elementName.equals("ioSpecification")){
@@ -511,8 +523,35 @@ public class ProcessModelParser extends Parser<ProcessModel> {
             }
         }
 
+        System.out.println("###############");
+        System.out.println(costDriverMap.keySet());
+        System.out.println(activityCostDriverAssociationMap.keySet());
+        System.out.println(activityCostDriverAssociationMap.values());
+
+        // cost driver map: data object reference -> cost driver name
+        // activityCostDriverAssociationMap: node id -> data object reference
+
+
+        activityCostDriverAssociationMap.forEach((node,ref) -> {
+            if (costDriverMap.containsKey(ref)) {
+                System.out.println(ref);
+                if (!activityToCostDriverMap.containsKey(node)) {
+                    activityToCostDriverMap.put(node, Collections.singletonList(costDriverMap.get(ref)));
+                } else {
+                    List<String> existingMap = activityToCostDriverMap.get(node);
+                    existingMap.add(costDriverMap.get(ref));
+                    activityToCostDriverMap.put(node, existingMap);
+                }
+
+            }
+        });
+
+        System.out.println("#########");
+        System.out.println(activityToCostDriverMap.keySet());
+        System.out.println(activityToCostDriverMap.values());
+
         ProcessModel processModel = new ProcessModel(processId, process, graph, identifiers, identifiersToNodeIds,
-                displayNames, subProcesses, calledElementsOfCallActivities, tasks, gateways, eventTypes);
+                displayNames, subProcesses, calledElementsOfCallActivities, tasks, gateways, eventTypes, activityToCostDriverMap);
         processModel.setName(processName);
         processModel.setNodeAttributes(nodeAttributes);
         processModel.setConditionExpressions(conditionExpressions);

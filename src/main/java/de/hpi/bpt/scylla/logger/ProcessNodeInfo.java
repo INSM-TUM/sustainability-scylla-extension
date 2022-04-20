@@ -1,8 +1,6 @@
 package de.hpi.bpt.scylla.logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 
@@ -19,6 +17,8 @@ public class ProcessNodeInfo {
     private long timestamp;
     private String taskName;
     private Set<String> resources;
+
+    private List<String> costDrivers;
     private ProcessNodeTransitionType transition;
     private Map<String, Object> dataObjectField; //holds for each processed Node (and so each field) the generated values of one specific instance
 
@@ -48,6 +48,20 @@ public class ProcessNodeInfo {
         this.transition = transition;
         this.dataObjectField = new HashMap<String, Object>();
         this.id = id;
+        this.costDrivers = new LinkedList<>();
+    }
+
+    public ProcessNodeInfo(Integer id, String processScopeNodeId, String source, long timestamp, String nodeName,
+                           Set<String> resources, ProcessNodeTransitionType transition, List<String> costDrivers) {
+        this.processScopeNodeId = processScopeNodeId;
+        this.source = source;
+        this.timestamp = timestamp;
+        this.taskName = nodeName;
+        this.resources = resources;
+        this.transition = transition;
+        this.dataObjectField = new HashMap<String, Object>();
+        this.id = id;
+        this.costDrivers = costDrivers;
     }
     
 
@@ -89,5 +103,9 @@ public class ProcessNodeInfo {
 
     public Integer getId(){
         return id;
+    }
+
+    public List<String> getCostDrivers() {
+        return costDrivers;
     }
 }

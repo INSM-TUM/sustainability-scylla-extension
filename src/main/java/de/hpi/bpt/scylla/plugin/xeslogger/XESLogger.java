@@ -107,6 +107,12 @@ public class XESLogger extends OutputLoggerPluggable {
                         attributeMap.put(res, factory.createAttributeLiteral(XOrganizationalExtension.KEY_RESOURCE, res,
                                 organizationalExt));
                     }
+
+                    List<String> costDrivers = info.getCostDrivers();
+                    for (String driver : costDrivers) {
+                        attributeMap.put(driver, factory.createAttributeLiteral("org:costdriver", driver,
+                                organizationalExt));
+                    }
                     
                    /* Set<String> dataObjects = info.getDataObejcts();
                     for (String dO : dataObjects) {

@@ -140,9 +140,16 @@ public class TaskTerminateEvent extends TaskEvent {
         if (!alreadyCanceled(model)) {
             ProcessModel processModel = processInstance.getProcessModel();
             String processScopeNodeId = SimulationUtils.getProcessScopeNodeId(processModel, nodeId);
+            List<String> costDrivers = new ArrayList<>();
+
+            Map<Integer, List<String>> costDriverMap = processModel.getActivityToCostDriverMap();
+            if (costDriverMap != null && costDriverMap.containsKey(nodeId)) {
+                costDrivers = costDriverMap.get(nodeId);
+                System.out.println(costDrivers);
+            }
 
             ProcessNodeInfo info = new ProcessNodeInfo(nodeId, processScopeNodeId, source, timestamp, taskName, resources,
-                    transition);
+                    transition, costDrivers);
             model.addNodeInfo(processModel, processInstance, info);
         }
     }
