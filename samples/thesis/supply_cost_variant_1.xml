@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<costVariantConfig count="100">
+    <variant id="one variant" frequency="0.5"/>
+    <variant id="another variant" frequency="0.5"/>
+</costVariantConfig>
+

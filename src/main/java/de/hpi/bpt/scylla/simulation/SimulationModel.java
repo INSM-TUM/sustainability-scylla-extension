@@ -20,6 +20,7 @@ import de.hpi.bpt.scylla.logger.ProcessNodeInfo;
 import de.hpi.bpt.scylla.logger.ResourceInfo;
 import de.hpi.bpt.scylla.model.configuration.ResourceReference;
 import de.hpi.bpt.scylla.model.configuration.SimulationConfiguration;
+import de.hpi.bpt.scylla.model.global.CostVariantConfiguration;
 import de.hpi.bpt.scylla.model.global.GlobalConfiguration;
 import de.hpi.bpt.scylla.model.process.CommonProcessElements;
 import de.hpi.bpt.scylla.model.process.ProcessModel;
@@ -43,6 +44,8 @@ import desmoj.core.simulator.TimeSpan;
 public class SimulationModel extends Model {
 
     private GlobalConfiguration globalConfiguration;
+
+    private CostVariantConfiguration costVariantConfiguration;
     
     private QueueManager resourceManager;
 
@@ -83,13 +86,15 @@ public class SimulationModel extends Model {
      * @param enableDesLogging
      *            true if DesmoJ logging is enabled
      */
-    public SimulationModel(Model owner, GlobalConfiguration globalConfiguration,
+    public SimulationModel(Model owner, GlobalConfiguration globalConfiguration, CostVariantConfiguration costVariantConfiguration,
             Map<String, CommonProcessElements> commonProcessElements, Map<String, ProcessModel> processModels,
             Map<String, SimulationConfiguration> simulationConfigurations, boolean enableBpsLogging,
             boolean enableDesLogging) {
         this(null, globalConfiguration.getId(), enableDesLogging, enableDesLogging);
 
         this.globalConfiguration = globalConfiguration; // top simulation model only
+
+        this.costVariantConfiguration = costVariantConfiguration;
 
         ProcessSimulationComponents parent = null;
         for (String processId : commonProcessElements.keySet()) {
@@ -201,6 +206,10 @@ public class SimulationModel extends Model {
 
     public GlobalConfiguration getGlobalConfiguration() {
         return globalConfiguration;
+    }
+
+    public CostVariantConfiguration getCostVariantConfiguration() {
+        return costVariantConfiguration;
     }
 
     public List<EventOrderType> getResourceAssignmentOrder() {

@@ -93,9 +93,14 @@ public class XESLogger extends OutputLoggerPluggable {
             log.getAttributes().put(XLifecycleExtension.KEY_MODEL, XLifecycleExtension.ATTR_MODEL);
 
             for (Integer processInstanceId : nodeInfos.keySet()) {
+
+                String costVariant = model.getCostVariantConfiguration().takeCostVariant(processInstanceId);
+
                 XTrace trace = factory.createTrace();
                 trace.getAttributes().put(XConceptExtension.KEY_NAME, factory
                         .createAttributeLiteral(XConceptExtension.KEY_NAME, processInstanceId.toString(), conceptExt));
+
+                trace.getAttributes().put("cost:variant", factory.createAttributeLiteral("cost:variant", costVariant, conceptExt));
 
                 List<ProcessNodeInfo> nodeInfoList = nodeInfos.get(processInstanceId);
                 for (ProcessNodeInfo info : nodeInfoList) {
@@ -110,7 +115,7 @@ public class XESLogger extends OutputLoggerPluggable {
 
                     List<String> costDrivers = info.getCostDrivers();
                     for (String driver : costDrivers) {
-                        attributeMap.put(driver, factory.createAttributeLiteral("org:costdriver", driver,
+                        attributeMap.put(driver, factory.createAttributeLiteral("cost:driver", driver,
                                 organizationalExt));
                     }
                     

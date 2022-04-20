@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import de.hpi.bpt.scylla.model.global.CostVariantConfiguration;
+import de.hpi.bpt.scylla.parser.*;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -25,10 +27,6 @@ import de.hpi.bpt.scylla.model.configuration.SimulationConfiguration;
 import de.hpi.bpt.scylla.model.global.GlobalConfiguration;
 import de.hpi.bpt.scylla.model.process.CommonProcessElements;
 import de.hpi.bpt.scylla.model.process.ProcessModel;
-import de.hpi.bpt.scylla.parser.CommonProcessElementsParser;
-import de.hpi.bpt.scylla.parser.GlobalConfigurationParser;
-import de.hpi.bpt.scylla.parser.ProcessModelParser;
-import de.hpi.bpt.scylla.parser.SimulationConfigurationParser;
 import de.hpi.bpt.scylla.plugin.batch.BatchPluginUtils;
 import de.hpi.bpt.scylla.plugin_loader.DependencyGraph.CycleException;
 import de.hpi.bpt.scylla.plugin_loader.PluginLoader;
@@ -53,6 +51,8 @@ public class SimulationManager {
     private String experimentOutputFolder;
 
     private GlobalConfiguration globalConfiguration;
+
+    private CostVariantConfiguration costVariantConfiguration;
     private Map<String, CommonProcessElements> commonProcessElements = new HashMap<String, CommonProcessElements>();
     private Map<String, ProcessModel> processModels = new HashMap<String, ProcessModel>();
     private Map<String, SimulationConfiguration> simulationConfigurations = new HashMap<String, SimulationConfiguration>();
@@ -63,6 +63,8 @@ public class SimulationManager {
     private String[] processModelFilenames;
     private String[] simulationConfigurationFilenames;
     private String globalConfigurationFilename;
+
+    private String costVariantConfigFile;
     
 	private String outputPath;
 
@@ -83,12 +85,13 @@ public class SimulationManager {
      *            log DesmoJ traces and write HTML trace file if true
      */
     public SimulationManager(String folder, String[] processModelFilenames, String[] simulationConfigurationFilenames,
-            String globalConfigurationFilename, boolean enableBpsLogging, boolean enableDesLogging) {
+            String globalConfigurationFilename, String costVariantConfigFile, boolean enableBpsLogging, boolean enableDesLogging) {
 
         this.experimentOutputFolder = normalizePath(folder);
         this.processModelFilenames = normalizePaths(processModelFilenames);
         this.simulationConfigurationFilenames = normalizePaths(simulationConfigurationFilenames);
         this.globalConfigurationFilename = normalizePath(globalConfigurationFilename);
+        this.costVariantConfigFile = normalizePath(costVariantConfigFile);
         this.enableBpsLogging = enableBpsLogging;
         this.enableDesLogging = enableDesLogging;
     }
@@ -136,7 +139,7 @@ public class SimulationManager {
             exp.setSeedGenerator((new Random()).nextLong());
         }
 
-        SimulationModel sm = new SimulationModel(null, globalConfiguration, commonProcessElements, processModels,
+        SimulationModel sm = new SimulationModel(null, globalConfiguration, costVariantConfiguration, commonProcessElements, processModels,
                 simulationConfigurations, enableBpsLogging, enableDesLogging);
         sm.connectToExperiment(exp);
 
@@ -215,11 +218,19 @@ public class SimulationManager {
         
         if (globalConfigurationFilename == null || globalConfigurationFilename.isEmpty())
             throw new ScyllaValidationException("No global configuration provided.");
+
+        if (costVariantConfigFile == null || costVariantConfigFile.isEmpty())
+            throw new ScyllaValidationException("No cost variant configuration provided.");
         
         // parse global configuration XML
         Document gcDoc = builder.build(globalConfigurationFilename);
         Element gcRootElement = gcDoc.getRootElement();
         parseGlobalConfiguration(gcRootElement);
+
+        //parse cost variant XML
+        Document costVariantDoc = builder.build(costVariantConfigFile);
+        Element costVariantRootElement = costVariantDoc.getRootElement();
+        parseCostVariantConfiguration(costVariantRootElement);
 
         CommonProcessElementsParser cpeParser = new CommonProcessElementsParser(this);
         // parse each process model XML (.bpmn)
@@ -247,6 +258,12 @@ public class SimulationManager {
         GlobalConfigurationParserPluggable.runPlugins(this, globalConfiguration, gcRootElement);
 
         DateTimeUtils.setZoneId(globalConfiguration.getZoneId());
+    }
+
+    protected void parseCostVariantConfiguration(Element costVariantRootElement) throws ScyllaValidationException {
+        CostVariantConfigurationParser costVariantConfigurationParser = new CostVariantConfigurationParser();
+        costVariantConfiguration = costVariantConfigurationParser.parse(costVariantRootElement);
+
     }
     
     protected void parseProcessCommonsAndModel(CommonProcessElementsParser cpeParser, Element pmRootElement, String filename) throws ScyllaValidationException {

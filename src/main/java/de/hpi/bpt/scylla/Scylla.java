@@ -37,6 +37,17 @@ public class Scylla {
                                                 })
                                                 .toArray(String[]::new);
 
+        // todo: ensure cost is either passed or ignored for scripts
+        String costVariantConfigFile = Arrays.stream(args)
+                .filter(x -> x.contains("--cost"))
+                .map(s -> {
+                    String[] splitted = s.split("=");
+                    return splitted[splitted.length - 1];
+                })
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("You have to provide a cost variant file. Usage: --cost=<your file path>"));
+
+
         if (bpmnFilenames.length == 0) {
                 throw new IllegalArgumentException("You have to provide at least one bpmn diagram file. Usage: --bpmn=<your file path>");
         }
@@ -66,6 +77,7 @@ public class Scylla {
                                         .orElse("sim-out/");
         
         SimulationManager manager = new SimulationManager(outputFolder, bpmnFilenames, simFilenames, configurationFile,
+                costVariantConfigFile,
                 enableBpsLogging, enableDesmojLogging);
         manager.run();
     }

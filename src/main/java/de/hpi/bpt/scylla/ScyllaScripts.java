@@ -88,11 +88,13 @@ public class ScyllaScripts {
     			e.printStackTrace();
     		}
         	
-        	
+
+			// todo: fix cost path
         	runSimulation(
         			globalConf, 
         			model, 
-        			simConf,	
+        			simConf,
+					"",
         			f+"results/"+numClerks+"_"+numInstances+"_"+new SimpleDateFormat("yy_MM_dd_HH_mm_ss_SSS").format(new Date())+"/");
     	}
 	}
@@ -110,7 +112,7 @@ public class ScyllaScripts {
 					Path simConf = each.resolveSibling(fileName+".xml");
 					assert simConf.toFile().exists();
 					Path output = each.resolveSibling(fileName);
-					runSimulation(globalConf.toString(), each.toString(), simConf.toString(), output.toString()+FILEDELIM);
+					runSimulation(globalConf.toString(), each.toString(), simConf.toString(), "", output.toString()+FILEDELIM);
 			    	
 				});
 		} catch (IOException e) {
@@ -184,11 +186,12 @@ public class ScyllaScripts {
     
     
     
-    public static void runSimulation(String global, String bpmn, String sim, String outputPath) {
+    public static void runSimulation(String global, String bpmn, String sim, String cost, String outputPath) {
     	SimulationManager manager = new SimulationManager(null, 
 				new String[] {bpmn}, 
 				new String[] {sim}, 
-				global, 
+				global,
+				cost,
 				true, 
 				false);
 		if(Objects.nonNull(outputPath))manager.setOutputPath(outputPath);
