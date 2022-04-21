@@ -88,13 +88,10 @@ public class ScyllaScripts {
     			e.printStackTrace();
     		}
         	
-
-			// todo: fix cost path
-        	runSimulation(
+			runSimulation(
         			globalConf, 
         			model, 
         			simConf,
-					"",
         			f+"results/"+numClerks+"_"+numInstances+"_"+new SimpleDateFormat("yy_MM_dd_HH_mm_ss_SSS").format(new Date())+"/");
     	}
 	}
@@ -197,5 +194,16 @@ public class ScyllaScripts {
 		if(Objects.nonNull(outputPath))manager.setOutputPath(outputPath);
 		manager.run();
     }
+
+	public static void runSimulation(String global, String bpmn, String sim, String outputPath) {
+		SimulationManager manager = new SimulationManager(null,
+				new String[] {bpmn},
+				new String[] {sim},
+				global,
+				true,
+				false);
+		if(Objects.nonNull(outputPath))manager.setOutputPath(outputPath);
+		manager.run();
+	}
 
 }

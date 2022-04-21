@@ -68,6 +68,11 @@ public class SimulationPane extends JPanel{
 	private ListPanel<FileListEntry> list_CurrentBpmnFiles;
 	private JButton button_openBpmnFile;
 //	private JButton button_removeBpmnFile;
+
+	//Cost config file components
+	private JLabel lblCurrentCostFile;
+	private FileListEntry displayCurrentCostFileChosen;
+	private JButton button_openCostFile;
 	
 	//Simulation file components
 	private JLabel lblCurrentSimulationFiles;
@@ -242,6 +247,75 @@ public class SimulationPane extends JPanel{
 		gbc_button_openBpmnFile.gridy = 3;
 		gbc_button_openBpmnFile.gridheight = 2;
 		this.add(button_openBpmnFile, gbc_button_openBpmnFile);
+
+		////////////////////////
+
+		// todo: make this appear in the GUI, fix grid layout
+
+		lblCurrentCostFile = new JLabel();
+		lblCurrentCostFile.setOpaque(true);
+		lblCurrentCostFile.setFont(ScyllaGUI.TITLEFONT);
+		lblCurrentCostFile.setBackground(ScyllaGUI.ColorField0);
+		lblCurrentCostFile.setForeground(ScyllaGUI.TITLEFONT_COLOR);
+		lblCurrentCostFile.setText(" Current Cost Config ");
+		GridBagConstraints gbc_lblCurrentCostFile = new GridBagConstraints();
+		gbc_lblCurrentCostFile.fill = GridBagConstraints.BOTH;
+		gbc_lblCurrentCostFile.insets = new Insets(ROW1, COL1, 0, COL1);
+		gbc_lblCurrentCostFile.gridwidth = 2;
+		gbc_lblCurrentCostFile.gridx = 0;
+		gbc_lblCurrentCostFile.gridy = 0;
+		this.add(lblCurrentCostFile, gbc_lblCurrentCostFile);
+
+
+		/*displayCurrentCostFileChosen = new FileListEntry(null," ", (s)->{
+			EditorPane ep =  new CostConfigurationPane();
+			File f = new File(s);
+			ep.openFile(f);
+			parent.addEditor(ep);
+		}, false);
+		displayCurrentCostFileChosen.buttonEdit.setVisible(false);
+		displayCurrentCostFileChosen.setFont(ScyllaGUI.DEFAULTFONT);
+		displayCurrentCostFileChosen.setToolTipText("Path for current cost configuaration file");
+		GridBagConstraints gbc_displayCurrentCostConfigChosenWrap = new GridBagConstraints();
+		gbc_displayCurrentCostConfigChosenWrap.fill = GridBagConstraints.BOTH;
+		gbc_displayCurrentCostConfigChosenWrap.insets = new Insets(0, COL1, 0, 0);
+		gbc_displayCurrentCostConfigChosenWrap.gridx = 0;
+		gbc_displayCurrentCostConfigChosenWrap.gridy = 1;
+		JScrollPane panelCostConfigWrap = new JScrollPane();
+		panelCostConfigWrap.setViewportView(displayCurrentCostFileChosen);
+		this.add(panelCostConfigWrap, gbc_displayCurrentCostConfigChosenWrap);
+		*/
+
+		Container container_costButtons = new Container();
+		container_costButtons.setLayout(new GridLayout(2,1));
+
+		button_openCostFile = new JButton();
+		button_openCostFile.setIcon(ScyllaGUI.ICON_OPEN);
+		button_openCostFile.setFont(ScyllaGUI.DEFAULTFONT);
+		button_openCostFile.setToolTipText("Choose other file");
+		button_openCostFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ScalingFileChooser chooser = new ScalingFileChooser(ScyllaGUI.DEFAULTFILEPATH);
+				chooser.setDialogTitle("Choose cost config");
+				chooser.setXMLFilter();
+				int c = chooser.showDialog(null,"Open");
+				if(c == ScalingFileChooser.APPROVE_OPTION){
+					displayCurrentCostFileChosen.setText(chooser.getSelectedFile().getPath());
+					displayCurrentCostFileChosen.buttonEdit.setVisible(true);
+					ScyllaGUI.DEFAULTFILEPATH = chooser.getSelectedFile().getPath();
+				}
+			}
+		});
+		GridBagConstraints gbc_container_costButtons = new GridBagConstraints();
+		gbc_container_costButtons.fill = GridBagConstraints.BOTH;
+		gbc_container_costButtons.insets = new Insets(0, 0, 0, COL1);
+		gbc_container_costButtons.gridx = 1;
+		gbc_container_costButtons.gridy = 1;
+		container_costButtons.add(button_openCostFile);
+		this.add(container_costButtons, gbc_container_costButtons);
+
+
+		//////////////////////////
 		
 //		button_removeBpmnFile = new JButton("");
 //		button_removeBpmnFile.setFont(ScyllaGUI.DEFAULTFONT);
@@ -454,12 +528,23 @@ public class SimulationPane extends JPanel{
 				for(int i = 0; i < simFilenames.length; i++){
 					simFilenames[i] = list_CurrentSimFiles.getElementAt(i).getText();
 				}
+
+				if (displayCurrentCostFileChosen.getText() != null && !displayCurrentCostFileChosen.getText().isEmpty()) {
+					startSimulation(
+							displayCurrentGlobalConfigChosen.getText(),
+							displayCurrentCostFileChosen.getText(),
+							bpmnFilenames,
+							simFilenames);
+				} else {
+					startSimulation(
+							displayCurrentGlobalConfigChosen.getText(),
+							null,
+							bpmnFilenames,
+							simFilenames
+					);
+				}
 				
-				startSimulation(
-						displayCurrentGlobalConfigChosen.getText(),
-						bpmnFilenames,
-						simFilenames
-						);
+
 			}
 		});
 		GridBagConstraints gbc_button_StartSimulation = new GridBagConstraints();
@@ -591,7 +676,7 @@ public class SimulationPane extends JPanel{
 	 * @param bpmnFilenames : Array of bpmn file names
 	 * @param simFilenames : Array of sim file names
 	 */
-	private synchronized void startSimulation(String resFilename, String[] bpmnFilenames, String[] simFilenames) {
+	private synchronized void startSimulation(String resFilename, String costFilename, String[] bpmnFilenames, String[] simFilenames) {
 
 		if(resFilename.isEmpty() || bpmnFilenames.length == 0 || simFilenames.length == 0) {
 			System.err.println("Not all simulation input files have been specified. Aborting.");
@@ -614,8 +699,16 @@ public class SimulationPane extends JPanel{
             
             boolean success = true;
 
-            SimulationManager manager = new SimulationManager(ScyllaGUI.DESMOJOUTPUTPATH, bpmnFilenames, simFilenames, resFilename,
-                    "", enableBpsLogging, enableDesmojLogging);
+			SimulationManager manager;
+			if (costFilename == null) {
+				manager = new SimulationManager(ScyllaGUI.DESMOJOUTPUTPATH, bpmnFilenames, simFilenames, resFilename,
+						enableBpsLogging, enableDesmojLogging);
+			} else {
+				manager = new SimulationManager(ScyllaGUI.DESMOJOUTPUTPATH, bpmnFilenames, simFilenames, resFilename,
+						costFilename, enableBpsLogging, enableDesmojLogging);
+			}
+
+
             try{
             	System.out.println("Starting simulation at "+new SimpleDateFormat("HH:mm:ss").format(new Date()));
                 manager.run();

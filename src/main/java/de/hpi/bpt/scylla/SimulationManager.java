@@ -96,6 +96,17 @@ public class SimulationManager {
         this.enableDesLogging = enableDesLogging;
     }
 
+    public SimulationManager(String folder, String[] processModelFilenames, String[] simulationConfigurationFilenames,
+                             String globalConfigurationFilename, boolean enableBpsLogging, boolean enableDesLogging) {
+
+        this.experimentOutputFolder = normalizePath(folder);
+        this.processModelFilenames = normalizePaths(processModelFilenames);
+        this.simulationConfigurationFilenames = normalizePaths(simulationConfigurationFilenames);
+        this.globalConfigurationFilename = normalizePath(globalConfigurationFilename);
+        this.enableBpsLogging = enableBpsLogging;
+        this.enableDesLogging = enableDesLogging;
+    }
+
     /**
      * parses input, runs DesmoJ simulation experiment, writes BPS output logs
      */
