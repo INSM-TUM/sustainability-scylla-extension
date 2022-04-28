@@ -87,7 +87,7 @@ public class ScyllaScripts {
     		} catch (JDOMException | IOException e) {
     			e.printStackTrace();
     		}
-        	
+
 			runSimulation(
         			globalConf, 
         			model, 
@@ -109,7 +109,7 @@ public class ScyllaScripts {
 					Path simConf = each.resolveSibling(fileName+".xml");
 					assert simConf.toFile().exists();
 					Path output = each.resolveSibling(fileName);
-					runSimulation(globalConf.toString(), each.toString(), simConf.toString(), "", output.toString()+FILEDELIM);
+					runSimulation(globalConf.toString(), each.toString(), simConf.toString(), output.toString()+FILEDELIM);
 			    	
 				});
 		} catch (IOException e) {
@@ -180,10 +180,10 @@ public class ScyllaScripts {
     	runSimulation(f+"BatchGlobalConfiguration.xml", f+"Version3_seqTaskbased.bpmn", f+"Version3.xml", 			f+"results/v3_taskbased/");
     	runSimulation(f+"BatchGlobalConfiguration.xml", f+"Version3_seqCasebased.bpmn", f+"Version3_casebased.xml", f+"results/v3_casebased/");*/
     }
-    
-    
-    
+
+
     public static void runSimulation(String global, String bpmn, String sim, String cost, String outputPath) {
+			// Simulation run including a cost variant configuration
     	SimulationManager manager = new SimulationManager(null, 
 				new String[] {bpmn}, 
 				new String[] {sim}, 

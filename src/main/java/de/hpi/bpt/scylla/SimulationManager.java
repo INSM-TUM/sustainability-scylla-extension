@@ -86,7 +86,7 @@ public class SimulationManager {
      */
     public SimulationManager(String folder, String[] processModelFilenames, String[] simulationConfigurationFilenames,
             String globalConfigurationFilename, String costVariantConfigFile, boolean enableBpsLogging, boolean enableDesLogging) {
-
+        // simulation manager including a cost variant configuration
         this.experimentOutputFolder = normalizePath(folder);
         this.processModelFilenames = normalizePaths(processModelFilenames);
         this.simulationConfigurationFilenames = normalizePaths(simulationConfigurationFilenames);
@@ -98,7 +98,7 @@ public class SimulationManager {
 
     public SimulationManager(String folder, String[] processModelFilenames, String[] simulationConfigurationFilenames,
                              String globalConfigurationFilename, boolean enableBpsLogging, boolean enableDesLogging) {
-
+        // simulation manager excluding a cost variant configuration
         this.experimentOutputFolder = normalizePath(folder);
         this.processModelFilenames = normalizePaths(processModelFilenames);
         this.simulationConfigurationFilenames = normalizePaths(simulationConfigurationFilenames);

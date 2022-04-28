@@ -3,11 +3,13 @@ package de.hpi.bpt.scylla.model.global;
 import java.util.*;
 
 public class CostVariantConfiguration {
-    private List<String> costVariants;
+    private final List<String> costVariants;
 
     public CostVariantConfiguration(Map<String, Double> costVariantProbabilities, Integer simulationRuns) {
         costVariants = new ArrayList<>();
 
+        // for each cost variant and its probabilities, as well as the number of simulation runs,
+        // randomly determine order of cost variants
         costVariantProbabilities.forEach((variant, frequency) -> {
 
             double count = frequency * simulationRuns;

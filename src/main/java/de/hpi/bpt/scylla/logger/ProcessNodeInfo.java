@@ -40,6 +40,7 @@ public class ProcessNodeInfo {
      */
     public ProcessNodeInfo(Integer id, String processScopeNodeId, String source, long timestamp, String nodeName,
             Set<String> resources, ProcessNodeTransitionType transition) {
+        // Process Node Info without cost drivers
         this.processScopeNodeId = processScopeNodeId;
         this.source = source;
         this.timestamp = timestamp;
@@ -53,6 +54,7 @@ public class ProcessNodeInfo {
 
     public ProcessNodeInfo(Integer id, String processScopeNodeId, String source, long timestamp, String nodeName,
                            Set<String> resources, ProcessNodeTransitionType transition, List<String> costDrivers) {
+        // Process Node Info with cost drivers
         this.processScopeNodeId = processScopeNodeId;
         this.source = source;
         this.timestamp = timestamp;

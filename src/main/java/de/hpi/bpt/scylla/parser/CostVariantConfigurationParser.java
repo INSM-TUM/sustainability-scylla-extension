@@ -15,19 +15,18 @@ public class CostVariantConfigurationParser implements IDOMParser<CostVariantCon
 
         Map<String, Double> costVariantMap = new HashMap<>();
 
-        List<Element> globalConfigurationElements = rootElement.getChildren();
+        List<Element> costVariantConfigurationElements = rootElement.getChildren();
 
+        // get number of simulation runs
         Integer count = Integer.valueOf(rootElement.getAttributeValue("count"));
 
-        globalConfigurationElements.forEach(element -> {
+        costVariantConfigurationElements.forEach(element -> {
 
             if (!Objects.equals(element.getName(), "fixed_cost")) {
-            String variantID = element.getAttributeValue("id");
-            Double frequency = Double.valueOf(element.getAttributeValue("frequency"));
-            costVariantMap.put(variantID, frequency);
-
-            System.out.println(element.getAttributeValue("id"));
-            System.out.println(element.getAttributeValue("frequency"));
+                // if not fixed cost, extract id and frequency
+                String variantID = element.getAttributeValue("id");
+                Double frequency = Double.valueOf(element.getAttributeValue("frequency"));
+                costVariantMap.put(variantID, frequency);
             }
         });
 

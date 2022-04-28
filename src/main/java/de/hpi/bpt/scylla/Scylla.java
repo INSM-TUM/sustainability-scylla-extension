@@ -37,7 +37,6 @@ public class Scylla {
                                                 })
                                                 .toArray(String[]::new);
 
-        // todo: ensure cost is either passed or ignored for scripts
         String costVariantConfigFile = Arrays.stream(args)
                 .filter(x -> x.contains("--cost"))
                 .map(s -> {

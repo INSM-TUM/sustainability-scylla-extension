@@ -170,6 +170,10 @@ public class ProcessModelParser extends Parser<ProcessModel> {
         Map<Integer, List<Element>> tasksWithDataInputAssociations = new HashMap<Integer, List<Element>>(); //not only tasks anymore, also events
         Map<Integer, List<Element>> tasksWithDataOutputAssociations = new HashMap<Integer, List<Element>>(); //not only tasks anymore, also events
 
+
+        // cost driver map: data object reference -> cost driver name
+        // activityCostDriverAssociationMap: node id -> data object reference
+        // activityToCostDriverMap: node -> cost drivers
         Map<String, String> costDriverMap = new HashMap<>();
         Map<Integer, String> activityCostDriverAssociationMap = new HashMap<>();
         Map<Integer, List<String>> activityToCostDriverMap = new HashMap<>();
@@ -235,10 +239,9 @@ public class ProcessModelParser extends Parser<ProcessModel> {
                     List<Element> dataInElements = el.getChildren("dataInputAssociation", bpmnNamespace);
                     if (!dataInElements.isEmpty()) {
                         tasksWithDataInputAssociations.put(nodeId, dataInElements);
-                        dataInElements.forEach(e -> System.out.println(e.getChild("sourceRef", bpmnNamespace).getValue()));
-                        // System.out.println(dataInElements);
-                        // todo: cost driver annotation can be detected here
+                        // cost driver annotation can be detected here
                         for (Element dataInElement : dataInElements) {
+                            // store each data association of activity because it could be a cost driver
                             String associationID = dataInElement.getChild("sourceRef", bpmnNamespace).getValue();
                             activityCostDriverAssociationMap.put(nodeId, associationID);
                         }
@@ -395,12 +398,11 @@ public class ProcessModelParser extends Parser<ProcessModel> {
                 else if (elementName.equals("dataObjectReference")) {
                 	String dataObjectRef = el.getAttributeValue("dataObjectRef");
                     dataObjectReferences.put(nodeId, dataObjectRef);
-                    // todo: cost driver can be detected here
+                    // cost driver can be detected here
                     String dataObjectName = el.getAttributeValue("name");
                     if (dataObjectName.startsWith("Cost Driver: ")) {
+                        // extract cost driver name and store it in map of data object ref to cost driver
                         String costDriverName = dataObjectName.split(": ")[1];
-                        System.out.println(costDriverName);
-                        System.out.println(el.getAttributeValue("id"));
                         costDriverMap.put(el.getAttributeValue("id"), costDriverName);
                     }
 
@@ -523,18 +525,8 @@ public class ProcessModelParser extends Parser<ProcessModel> {
             }
         }
 
-        System.out.println("###############");
-        System.out.println(costDriverMap.keySet());
-        System.out.println(activityCostDriverAssociationMap.keySet());
-        System.out.println(activityCostDriverAssociationMap.values());
-
-        // cost driver map: data object reference -> cost driver name
-        // activityCostDriverAssociationMap: node id -> data object reference
-
-
         activityCostDriverAssociationMap.forEach((node,ref) -> {
             if (costDriverMap.containsKey(ref)) {
-                System.out.println(ref);
                 if (!activityToCostDriverMap.containsKey(node)) {
                     activityToCostDriverMap.put(node, Collections.singletonList(costDriverMap.get(ref)));
                 } else {
@@ -546,9 +538,6 @@ public class ProcessModelParser extends Parser<ProcessModel> {
             }
         });
 
-        System.out.println("#########");
-        System.out.println(activityToCostDriverMap.keySet());
-        System.out.println(activityToCostDriverMap.values());
 
         ProcessModel processModel = new ProcessModel(processId, process, graph, identifiers, identifiersToNodeIds,
                 displayNames, subProcesses, calledElementsOfCallActivities, tasks, gateways, eventTypes, activityToCostDriverMap);
