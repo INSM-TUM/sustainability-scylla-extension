@@ -111,7 +111,7 @@ public class SimulationPane extends JPanel{
 		setBackground(ScyllaGUI.ColorBackground);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWeights = new double[]{24,1,20};
-		gridBagLayout.rowWeights = new double[]{3,3,3,4.5,4.5,3,4.5,4.5,3,18,5.5};
+		gridBagLayout.rowWeights = new double[]{3,3,3,4.5,4.5,3,4.5,4.5,3,3,3,18,5.5};
 		setLayout(gridBagLayout);
 		
 		int COL1 = ScyllaGUI.WIDTH/48;
@@ -263,31 +263,25 @@ public class SimulationPane extends JPanel{
 		gbc_lblCurrentCostFile.insets = new Insets(ROW1, COL1, 0, COL1);
 		gbc_lblCurrentCostFile.gridwidth = 2;
 		gbc_lblCurrentCostFile.gridx = 0;
-		gbc_lblCurrentCostFile.gridy = 0;
+		gbc_lblCurrentCostFile.gridy = 8;
 		this.add(lblCurrentCostFile, gbc_lblCurrentCostFile);
 
 
-		/*displayCurrentCostFileChosen = new FileListEntry(null," ", (s)->{
-			EditorPane ep =  new CostConfigurationPane();
-			File f = new File(s);
-			ep.openFile(f);
-			parent.addEditor(ep);
-		}, false);
-		displayCurrentCostFileChosen.buttonEdit.setVisible(false);
+		displayCurrentCostFileChosen = new FileListEntry(null,null, null, false);
 		displayCurrentCostFileChosen.setFont(ScyllaGUI.DEFAULTFONT);
 		displayCurrentCostFileChosen.setToolTipText("Path for current cost configuaration file");
 		GridBagConstraints gbc_displayCurrentCostConfigChosenWrap = new GridBagConstraints();
 		gbc_displayCurrentCostConfigChosenWrap.fill = GridBagConstraints.BOTH;
 		gbc_displayCurrentCostConfigChosenWrap.insets = new Insets(0, COL1, 0, 0);
 		gbc_displayCurrentCostConfigChosenWrap.gridx = 0;
-		gbc_displayCurrentCostConfigChosenWrap.gridy = 1;
+		gbc_displayCurrentCostConfigChosenWrap.gridy = 9;
 		JScrollPane panelCostConfigWrap = new JScrollPane();
 		panelCostConfigWrap.setViewportView(displayCurrentCostFileChosen);
 		this.add(panelCostConfigWrap, gbc_displayCurrentCostConfigChosenWrap);
-		*/
+
 
 		Container container_costButtons = new Container();
-		container_costButtons.setLayout(new GridLayout(2,1));
+		container_costButtons.setLayout(new GridLayout(1,1));
 
 		button_openCostFile = new JButton();
 		button_openCostFile.setIcon(ScyllaGUI.ICON_OPEN);
@@ -310,7 +304,7 @@ public class SimulationPane extends JPanel{
 		gbc_container_costButtons.fill = GridBagConstraints.BOTH;
 		gbc_container_costButtons.insets = new Insets(0, 0, 0, COL1);
 		gbc_container_costButtons.gridx = 1;
-		gbc_container_costButtons.gridy = 1;
+		gbc_container_costButtons.gridy = 9;
 		container_costButtons.add(button_openCostFile);
 		this.add(container_costButtons, gbc_container_costButtons);
 
@@ -434,7 +428,7 @@ public class SimulationPane extends JPanel{
 		GridBagConstraints gbc_scrollPane_plugins = new GridBagConstraints();
 		gbc_scrollPane_plugins.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_plugins.insets = new Insets(0, 0, 0, COL1);
-		gbc_scrollPane_plugins.gridheight = 7;
+		gbc_scrollPane_plugins.gridheight = 8;
 		gbc_scrollPane_plugins.gridx = 2;
 		gbc_scrollPane_plugins.gridy = 1;
 		this.add(scrollPane_plugins, gbc_scrollPane_plugins);
@@ -472,7 +466,7 @@ public class SimulationPane extends JPanel{
 		gbc_lblConsoleOutput.insets = new Insets(ROW1, COL1, 0, COL1);
 		gbc_lblConsoleOutput.gridwidth = 3;
 		gbc_lblConsoleOutput.gridx = 0;
-		gbc_lblConsoleOutput.gridy = 8;
+		gbc_lblConsoleOutput.gridy = 10;
 		this.add(lblConsoleOutput, gbc_lblConsoleOutput);
 		
 		scrollPane_Console = new JScrollPane();
@@ -482,7 +476,7 @@ public class SimulationPane extends JPanel{
 		gbc_scrollPane_Console.insets = new Insets(0, COL1, ROW1, COL1);
 		gbc_scrollPane_Console.gridwidth = 3;
 		gbc_scrollPane_Console.gridx = 0;
-		gbc_scrollPane_Console.gridy = 9;
+		gbc_scrollPane_Console.gridy = 11;
 		this.add(scrollPane_Console, gbc_scrollPane_Console);
 		
 		console = new Console(){
@@ -505,7 +499,7 @@ public class SimulationPane extends JPanel{
 		GridBagConstraints gbc_panelBottom = new GridBagConstraints();
 		gbc_panelBottom.fill = GridBagConstraints.BOTH;
 		gbc_panelBottom.gridx = 0;
-		gbc_panelBottom.gridy = 10;
+		gbc_panelBottom.gridy = 12;
 		gbc_panelBottom.gridwidth = 3;
 		gbc_panelBottom.insets = new Insets(0, 0, ROW1, 0);
 		GridBagLayout gbl_panelBottom = new GridBagLayout();
