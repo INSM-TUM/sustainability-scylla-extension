@@ -144,7 +144,7 @@ public class TaskTerminateEvent extends TaskEvent {
             // if task terminates correctly, cost drivers are assigned to it
             List<String> costDrivers = new ArrayList<>();
 
-            Map<Integer, List<String>> costDriverMap = processModel.getActivityToCostDriverMap();
+            Map<Integer, ArrayList<String>> costDriverMap = processModel.getActivityToCostDriverMap();
             if (costDriverMap != null && costDriverMap.containsKey(nodeId)) {
                 costDrivers = costDriverMap.get(nodeId);
             }

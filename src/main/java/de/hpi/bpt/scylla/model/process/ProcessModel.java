@@ -1,10 +1,7 @@
 package de.hpi.bpt.scylla.model.process;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import org.jdom2.Element;
 
@@ -59,7 +56,7 @@ public class ProcessModel extends SimulationInput {
     private String participant;
     private Set<ProcessModel> processModelsInCollaboration;
 
-    private Map<Integer, List<String>> activityToCostDriverMap;
+    private Map<Integer, ArrayList<String>> activityToCostDriverMap;
 
     /**
      * Constructor.
@@ -91,7 +88,7 @@ public class ProcessModel extends SimulationInput {
             Map<String, Integer> identifiersToNodeIds, Map<Integer, String> displayNames,
             Map<Integer, ProcessModel> subProcesses, Map<Integer, String> calledElementsOfCallActivities,
             Map<Integer, TaskType> tasks, Map<Integer, GatewayType> gateways, Map<Integer, EventType> eventTypes,
-            Map<Integer, List<String>> activityToCostDriverMap) {
+            Map<Integer, ArrayList<String>> activityToCostDriverMap) {
         super(id);
         this.xmlDom = xmlDom;
         this.graph = graph;
@@ -401,7 +398,7 @@ public class ProcessModel extends SimulationInput {
         this.processModelsInCollaboration = processModelsTriggeredInCollaboration;
     }
 
-    public Map<Integer, List<String>> getActivityToCostDriverMap() {
+    public Map<Integer, ArrayList<String>> getActivityToCostDriverMap() {
         return activityToCostDriverMap;
     }
 }

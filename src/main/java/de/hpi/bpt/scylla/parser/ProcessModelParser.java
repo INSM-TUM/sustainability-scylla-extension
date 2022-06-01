@@ -175,8 +175,8 @@ public class ProcessModelParser extends Parser<ProcessModel> {
         // activityCostDriverAssociationMap: node id -> data object reference
         // activityToCostDriverMap: node -> cost drivers
         Map<String, String> costDriverMap = new HashMap<>();
-        Map<Integer, String> activityCostDriverAssociationMap = new HashMap<>();
-        Map<Integer, List<String>> activityToCostDriverMap = new HashMap<>();
+        java.util.List<java.util.Map.Entry<Integer,String>> activityCostDriverAssociationList = new java.util.ArrayList<>();
+        Map<Integer, ArrayList<String>> activityToCostDriverMap = new HashMap<>();
 
         int nodeId = 0;
         for (Element el : process.getChildren()) {
@@ -243,7 +243,7 @@ public class ProcessModelParser extends Parser<ProcessModel> {
                         for (Element dataInElement : dataInElements) {
                             // store each data association of activity because it could be a cost driver
                             String associationID = dataInElement.getChild("sourceRef", bpmnNamespace).getValue();
-                            activityCostDriverAssociationMap.put(nodeId, associationID);
+                            activityCostDriverAssociationList.add(new AbstractMap.SimpleEntry<>(nodeId, associationID));
                         }
                     }
                     List<Element> dataOutElements = el.getChildren("dataOutputAssociation", bpmnNamespace);
@@ -525,14 +525,14 @@ public class ProcessModelParser extends Parser<ProcessModel> {
             }
         }
 
-        activityCostDriverAssociationMap.forEach((node,ref) -> {
-            if (costDriverMap.containsKey(ref)) {
-                if (!activityToCostDriverMap.containsKey(node)) {
-                    activityToCostDriverMap.put(node, Collections.singletonList(costDriverMap.get(ref)));
+        activityCostDriverAssociationList.forEach(association -> {
+            if (costDriverMap.containsKey(association.getValue())) {
+                if (!activityToCostDriverMap.containsKey(association.getKey())) {
+                    activityToCostDriverMap.put(association.getKey(), new ArrayList<>(List.of(costDriverMap.get(association.getValue()))));
                 } else {
-                    List<String> existingMap = activityToCostDriverMap.get(node);
-                    existingMap.add(costDriverMap.get(ref));
-                    activityToCostDriverMap.put(node, existingMap);
+                    ArrayList<String> existingMap = activityToCostDriverMap.get(association.getKey());
+                    existingMap.add(costDriverMap.get(association.getValue()));
+                    activityToCostDriverMap.put(association.getKey(), existingMap);
                 }
 
             }
